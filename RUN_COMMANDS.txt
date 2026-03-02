@@ -1,0 +1,12 @@
+# Start MySQL (if not running)
+net start mysql
+
+# Start Backend (Terminal 1)
+<><>cd backend
+<><>..\apache-maven-3.9.6\bin\mvn.cmd spring-boot:run
+<><><>..\apache-maven-3.9.6\bin\mvn.cmd clean install
+
+# Start Frontend (Terminal 2)
+
+cd frontend  
+npm run dev
