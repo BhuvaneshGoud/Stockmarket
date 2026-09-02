@@ -20,8 +20,6 @@ function StockLogo({ symbol, name, logoUrl, size = 28 }) {
     () =>
       uniqueNonEmpty([
         logoUrl,
-        `https://financialmodelingprep.com/image-stock/${normalized}.png`,
-        `https://eodhd.com/img/logos/US/${normalized}.png`,
       ]),
     [logoUrl, normalized]
   );

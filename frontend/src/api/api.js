@@ -48,7 +48,7 @@ api.interceptors.response.use(
     const isAuthEndpoint =
       url.includes("/auth/login") || url.includes("/auth/register");
 
-    if (status === 401 && !isAuthEndpoint) {
+    if ((status === 401 || status === 403) && !isAuthEndpoint) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       if (window.location.pathname !== "/") {

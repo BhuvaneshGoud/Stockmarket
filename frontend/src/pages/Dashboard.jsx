@@ -323,7 +323,7 @@ function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {filteredTopStocks.map((stock) => {
+                {filteredTopStocks.map((stock, index) => {
                   const ltp = Number(stock.currentPrice || 0);
                   const chng = getChange(stock);
                   const pchng = getPercentChange(stock);
@@ -331,7 +331,7 @@ function Dashboard() {
 
                   return (
                     <tr
-                      key={stock.symbol}
+                      key={`${stock.symbol || "stock"}-${index}`}
                       style={{ borderBottom: "1px solid var(--border-color)", cursor: "pointer" }}
                       onClick={() => navigate(`/stock/${stock.symbol}`)}
                     >
@@ -427,14 +427,14 @@ function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {filteredMoverStocks.map((stock) => {
+              {filteredMoverStocks.map((stock, index) => {
                 const ltp = Number(stock.currentPrice || 0);
                 const chng = getChange(stock);
                 const pchng = getPercentChange(stock);
                 const isPositive = pchng >= 0;
                 return (
                   <tr
-                    key={`${moverView}-${stock.symbol}`}
+                    key={`${moverView}-${stock.symbol || "stock"}-${index}`}
                     style={{ borderBottom: "1px solid var(--border-color)", cursor: "pointer" }}
                     onClick={() => navigate(`/stock/${stock.symbol}`)}
                   >
@@ -518,11 +518,11 @@ function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {filteredHoldings.map(({ holding, stock, currentPrice, avgPrice, pl, plPercent, quantity }) => {
+                {filteredHoldings.map(({ holding, stock, currentPrice, avgPrice, pl, plPercent, quantity }, index) => {
                   const isPositive = pl >= 0;
 
                   return (
-                    <tr key={holding.symbol} style={{ borderBottom: "1px solid var(--border-color)" }}>
+                    <tr key={`${holding.symbol || "holding"}-${holding.id || index}`} style={{ borderBottom: "1px solid var(--border-color)" }}>
                       <td style={{ padding: "12px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                           <StockLogo symbol={holding.symbol} name={stock?.name || holding.symbol} logoUrl={stock?.logoUrl} />

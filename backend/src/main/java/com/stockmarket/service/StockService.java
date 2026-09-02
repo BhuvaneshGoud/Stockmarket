@@ -17,6 +17,8 @@ import java.util.Objects;
 import java.util.TreeSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +31,7 @@ public class StockService {
     private final Map<String, Instant> cacheTime = new ConcurrentHashMap<>();
     private final Map<String, Map<String, Object>> companyProfileCache = new ConcurrentHashMap<>();
     private final Map<String, Instant> companyProfileCacheTime = new ConcurrentHashMap<>();
+    private final AtomicBoolean refreshInProgress = new AtomicBoolean();
 
     private static final long CACHE_SECONDS = 15L;
     private static final long PROFILE_CACHE_SECONDS = 86400L;
@@ -41,17 +44,24 @@ public class StockService {
     );
 
     public List<Stock> getAllStocks() {
-        return getTrackedSymbols().stream()
-                .map(this::getFreshStockOrNull)
-                .filter(Objects::nonNull)
-                .toList();
+        List<Stock> availableStocks = getAvailableStocks();
+        CompletableFuture.runAsync(this::refreshLiveStocks);
+        return availableStocks;
     }
 
     public List<Stock> refreshLiveStocks() {
-        return getTrackedSymbols().stream()
-                .map(this::getFreshStockOrNull)
-                .filter(Objects::nonNull)
-                .toList();
+        if (!refreshInProgress.compareAndSet(false, true)) {
+            return getAvailableStocks();
+        }
+
+        try {
+            return getTrackedSymbols().stream()
+                    .map(this::getFreshStockOrNull)
+                    .filter(Objects::nonNull)
+                    .toList();
+        } finally {
+            refreshInProgress.set(false);
+        }
     }
 
     public Stock getStockBySymbol(String symbol) {
@@ -100,6 +110,15 @@ public class StockService {
                         .toList()
         );
         return merged.stream().toList();
+    }
+
+    private List<Stock> getAvailableStocks() {
+        return getTrackedSymbols().stream()
+                .map(symbol -> {
+                    Stock cached = liveStocksCache.get(symbol);
+                    return cached == null ? buildFallbackStock(symbol) : cloneStock(cached);
+                })
+                .toList();
     }
 
     private Stock getFreshStock(String symbol) {
@@ -239,12 +258,10 @@ public class StockService {
             return cloneStock(cached);
         }
 
-        Map<String, Object> profile = getCompanyProfile(normalized);
         Stock stock = new Stock();
         stock.setSymbol(normalized);
-        stock.setName(stringOrDefault(profile.get("name"), normalized));
-        stock.setSector(stringOrDefault(profile.get("finnhubIndustry"), "Unknown"));
-        stock.setLogoUrl(getProfileLogo(profile));
+        stock.setName(normalized);
+        stock.setSector("Unknown");
         stock.setCurrentPrice(BigDecimal.ZERO);
         stock.setPreviousClose(BigDecimal.ZERO);
         stock.setPriceChange(BigDecimal.ZERO);
