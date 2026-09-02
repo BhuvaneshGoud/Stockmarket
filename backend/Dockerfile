@@ -17,4 +17,4 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=backend-build /build/backend/target/stockmarket-backend-1.0.0.jar app.jar
 EXPOSE 8080
-CMD ["sh", "-c", "export SPRING_DATASOURCE_URL=jdbc:${DATABASE_URL}; exec java -jar app.jar"]
+CMD ["java", "-jar", "app.jar"]

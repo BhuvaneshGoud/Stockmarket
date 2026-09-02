@@ -9,10 +9,8 @@ services:
     healthCheckPath: /health
     autoDeployTrigger: commit
     envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: stockmarket-db
-          property: connectionString
+      - key: SPRING_PROFILES_ACTIVE
+        value: render
       - key: JWT_SECRET
         generateValue: true
       - key: FINNHUB_API_KEY
@@ -21,8 +19,3 @@ services:
         value: update
       - key: SPRING_JPA_SHOW_SQL
         value: "false"
-
-databases:
-  - name: stockmarket-db
-    region: singapore
-    plan: free
