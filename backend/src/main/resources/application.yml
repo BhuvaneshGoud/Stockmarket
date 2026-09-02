@@ -6,7 +6,6 @@ spring:
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/stockmarketfullstack_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
     username: ${SPRING_DATASOURCE_USERNAME:root}
     password: ${SPRING_DATASOURCE_PASSWORD:babbi}
-    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
@@ -14,16 +13,15 @@ spring:
     show-sql: ${SPRING_JPA_SHOW_SQL:true}
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
 
 server:
   port: ${PORT:8080}
 
 jwt:
-  secret: ${JWT_SECRET:yourVeryStrongSecretKeyThatIsAtLeast32CharactersLong}
+  secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION:86400000}
 
 finnhub:
   api:
-    key: ${FINNHUB_API_KEY:d6fk8v9r01qjq8n20f10d6fk8v9r01qjq8n20f1g}
+    key: ${FINNHUB_API_KEY}

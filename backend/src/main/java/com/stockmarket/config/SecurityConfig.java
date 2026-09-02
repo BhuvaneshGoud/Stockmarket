@@ -25,7 +25,12 @@ public class SecurityConfig {
                                 })
                                 .csrf(csrf -> csrf.disable())
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/auth/**", "/ws/**").permitAll()
+                                                .requestMatchers(
+                                                                "/", "/index.html", "/favicon.ico", "/assets/**",
+                                                                "/register", "/dashboard", "/markets", "/portfolio",
+                                                                "/transactions", "/watchlist", "/wallet", "/stock/**",
+                                                                "/health", "/api/auth/**", "/ws/**")
+                                                .permitAll()
                                                 .anyRequest().authenticated())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
